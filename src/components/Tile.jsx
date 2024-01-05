@@ -1,11 +1,15 @@
-// Tile.jsx
 import React from 'react';
 
 const Tile = ({ pointA, pointB, isBarrier, onClick }) => {
+  const tileStyle = {
+    backgroundColor: isBarrier ? 'black' : pointA ? 'green' : pointB ? 'red' : 'white',
+    color: 'white'
+  };
+
   return (
     <div
-      // This is the tile
-      className={`border-black border-2 h-10 w-10 flex items-center justify-center ${isBarrier ? 'bg-black' : 'bg-white'} ${pointA ? 'bg-green-500' : ''} ${pointB ? 'bg-red-500' : ''}`}
+      className="border-black border-2 h-10 w-10 flex items-center justify-center "
+      style={tileStyle}
       onClick={onClick}
     >
       {pointA && 'A'}

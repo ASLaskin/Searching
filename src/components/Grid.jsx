@@ -4,7 +4,7 @@ import Tile from './Tile';
 const Grid = ({ rows, cols }) => {
   const [APointActive, setAPointActive] = useState(false);
   const [BPointActive, setBPointActive] = useState(false);
-  const [barrierActive, setBarrierActive] = useState(false);
+  const [setBarrierButton, setSetBarrierButton] = useState(false);
 
   const initialGrid = Array.from({ length: rows }, () =>
     Array.from({ length: cols }, () => ({ row: 0, col: 0, isBarrier: false, pointA: false, pointB: false }))
@@ -15,15 +15,40 @@ const Grid = ({ rows, cols }) => {
   const handleCellClick = (row, col) => {
     console.log(`Clicked on cell (${row}, ${col})`);
     const newGrid = [...grid];
+
     if (APointActive) {
-      newGrid[row][col].pointA = true;
+      for (let i = 0; i < newGrid.length; i++) {
+        for (let j = 0; j < newGrid[i].length; j++) {
+          newGrid[i][j].pointA = false;
+        }
+      }
       setAPointActive(false);
-    } else if (BPointActive) {
-      newGrid[row][col].pointB = true;
+    }
+
+    if (BPointActive) {
+      for (let i = 0; i < newGrid.length; i++) {
+        for (let j = 0; j < newGrid[i].length; j++) {
+          newGrid[i][j].pointB = false;
+        }
+      }
       setBPointActive(false);
-    } else if (barrierActive) {
+    }
+
+    if (APointActive) {
+      newGrid[row][col].pointB = false;
+      newGrid[row][col].isBarrier = false;
+      newGrid[row][col].pointA = true;
+    } else if (BPointActive) {
+      newGrid[row][col].pointA = false;
+      newGrid[row][col].isBarrier = false;
+      newGrid[row][col].pointB = true;
+    } else if (setBarrierButton) {
+      newGrid[row][col].pointA = false;
+      newGrid[row][col].pointB = false;
       newGrid[row][col].isBarrier = true;
     }
+
+    console.log('Tile attributes:', newGrid[row][col]);
     setGrid(newGrid);
   };
 
@@ -33,7 +58,7 @@ const Grid = ({ rows, cols }) => {
     <div className='flex flex-col justify-center items-center'>
       <div className="grid grid-cols-10">
         {updatedGrid.map((row, rowIndex) => (
-          <div key={rowIndex} >
+          <div key={rowIndex}>
             {row.map((cell, colIndex) => (
               <Tile
                 key={`${rowIndex}-${colIndex}`}
@@ -47,9 +72,26 @@ const Grid = ({ rows, cols }) => {
         ))}
       </div>
       <div className="flex justify-center items-center pt-20 gap-8">
-        <button className="bg-green-500 text-white font-bold py-2 px-4 " onClick={() => setAPointActive(true)}>Set A</button>
-        <button className="bg-red-500 text-white font-bold py-2 px-4 " onClick={() => setBPointActive(true)}>Set B</button>
-        <button className="bg-black text-white font-bold py-2 px-4 " onClick={() => setBarrierActive(true)}>Set Barrier</button>
+        <button
+          className={`bg-green-500 text-white font-bold py-2 px-4 ${APointActive && !setBarrierButton && 'opacity-50'}`}
+          onClick={() => setAPointActive(!APointActive)}
+          disabled={setBarrierButton}
+        >
+          Set A
+        </button>
+        <button
+          className={`bg-red-500 text-white font-bold py-2 px-4 ${BPointActive && !setBarrierButton && 'opacity-50'}`}
+          onClick={() => setBPointActive(!BPointActive)}
+          disabled={setBarrierButton}
+        >
+          Set B
+        </button>
+        <button
+          className={`bg-${setBarrierButton ? 'yellow-500' : 'black'} text-white font-bold py-2 px-4`}
+          onClick={() => setSetBarrierButton(!setBarrierButton)}
+        >
+          Set Barrier
+        </button>
       </div>
     </div>
   );

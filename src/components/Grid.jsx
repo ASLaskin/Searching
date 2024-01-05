@@ -1,6 +1,6 @@
-import { useState } from "react";
-import Tile from "./Tile";
-import bfs from "../algorithms/BFS";
+import { useState } from 'react';
+import Tile from './Tile';
+import bfs from '../algorithms/BFS';
 
 const Grid = ({ rows, cols }) => {
   const [APointActive, setAPointActive] = useState(false);
@@ -15,7 +15,7 @@ const Grid = ({ rows, cols }) => {
       isBarrier: false,
       pointA: false,
       pointB: false,
-    }))
+    })),
   );
 
   const [grid, setGrid] = useState(initialGrid);
@@ -56,7 +56,7 @@ const Grid = ({ rows, cols }) => {
       newGrid[row][col].isBarrier = true;
     }
 
-    console.log("Tile attributes:", newGrid[row][col]);
+    console.log('Tile attributes:', newGrid[row][col]);
     setGrid(newGrid);
   };
 
@@ -70,8 +70,8 @@ const Grid = ({ rows, cols }) => {
   };
 
   const runBFS = async () => {
-    const startPoint = findPoint(grid, "pointA");
-    const endPoint = findPoint(grid, "pointB");
+    const startPoint = findPoint(grid, 'pointA');
+    const endPoint = findPoint(grid, 'pointB');
 
     if (startPoint && endPoint) {
       const { path, visitedCells } = bfs(grid, startPoint, endPoint);
@@ -106,23 +106,18 @@ const Grid = ({ rows, cols }) => {
   const updatedGrid = [...grid];
 
   return (
-    <div className="flex flex-col justify-center items-center pt-10">
-      <div className="flex justify-center items-center pb-4">
+    <div className='flex flex-col justify-center items-center pt-10'>
+      <div className='flex justify-center items-center pb-4'>
         <button
-          className="bg-blue-500 text-white font-bold py-2 px-4"
+          className='bg-blue-500 text-white font-bold py-2 px-4'
           onClick={runBFS}
-          disabled={
-            setBarrierButton ||
-            !(findPoint(grid, "pointA") && findPoint(grid, "pointB"))
-          }
+          disabled={setBarrierButton || !(findPoint(grid, 'pointA') && findPoint(grid, 'pointB'))}
         >
           Run BFS
         </button>
       </div>
-      {setBarrierButton && (
-        <h1>Barrier Mode is ON (click again to set other points)</h1>
-      )}
-      <div className="grid grid-cols-10">
+      {setBarrierButton && <h1>Barrier Mode is ON (click again to set other points)</h1>}
+      <div className='grid grid-cols-10'>
         {updatedGrid.map((row, rowIndex) => (
           <div key={rowIndex}>
             {row.map((cell, colIndex) => (
@@ -138,10 +133,10 @@ const Grid = ({ rows, cols }) => {
           </div>
         ))}
       </div>
-      <div className="flex justify-center items-center pt-10 gap-8">
+      <div className='flex justify-center items-center pt-10 gap-8'>
         <button
           className={`bg-green-500 text-white font-bold py-2 px-4 ${
-            APointActive && !setBarrierButton && "opacity-50"
+            APointActive && !setBarrierButton && 'opacity-50'
           }`}
           onClick={() => setAPointActive(!APointActive)}
           disabled={setBarrierButton}
@@ -150,7 +145,7 @@ const Grid = ({ rows, cols }) => {
         </button>
         <button
           className={`bg-red-500 text-white font-bold py-2 px-4 ${
-            BPointActive && !setBarrierButton && "opacity-50"
+            BPointActive && !setBarrierButton && 'opacity-50'
           }`}
           onClick={() => setBPointActive(!BPointActive)}
           disabled={setBarrierButton}
@@ -163,10 +158,7 @@ const Grid = ({ rows, cols }) => {
         >
           Set Barrier
         </button>
-        <button
-          className="bg-blue-500 text-white font-bold py-2 px-4"
-          onClick={clearGrid}
-        >
+        <button className='bg-blue-500 text-white font-bold py-2 px-4' onClick={clearGrid}>
           Clear
         </button>
       </div>
@@ -175,7 +167,7 @@ const Grid = ({ rows, cols }) => {
           <h2>Path found:</h2>
           {path.map((point, index) => (
             <span key={index}>
-              ({point.row}, {point.col}){index < path.length - 1 ? " -> " : ""}
+              ({point.row}, {point.col}){index < path.length - 1 ? ' -> ' : ''}
             </span>
           ))}
         </div>

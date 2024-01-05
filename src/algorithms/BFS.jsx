@@ -7,15 +7,12 @@ const getNeighbors = (grid, row, col) => {
   if (row > 0 && !grid[row - 1][col].isBarrier) {
     neighbors.push({ row: row - 1, col });
   }
-  
   if (row < numRows - 1 && !grid[row + 1][col].isBarrier) {
     neighbors.push({ row: row + 1, col });
   }
-
   if (col > 0 && !grid[row][col - 1].isBarrier) {
     neighbors.push({ row, col: col - 1 });
   }
-
   if (col < numCols - 1 && !grid[row][col + 1].isBarrier) {
     neighbors.push({ row, col: col + 1 });
   }
@@ -38,10 +35,10 @@ const getPath = (cameFrom, start, end) => {
 const bfs = (grid, start, end) => {
   const queue = [];
   const visited = Array.from({ length: grid.length }, () =>
-    Array.from({ length: grid[0].length }, () => false)
+    Array.from({ length: grid[0].length }, () => false),
   );
   const cameFrom = Array.from({ length: grid.length }, () =>
-    Array.from({ length: grid[0].length }, () => null)
+    Array.from({ length: grid[0].length }, () => null),
   );
 
   const visitedCells = [];

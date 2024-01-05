@@ -1,3 +1,4 @@
+// Grid.jsx
 import React, { useState } from 'react';
 import Tile from './Tile';
 
@@ -52,10 +53,17 @@ const Grid = ({ rows, cols }) => {
     setGrid(newGrid);
   };
 
+  const clearGrid = () => {
+    setGrid(initialGrid);
+    setAPointActive(false);
+    setBPointActive(false);
+    setSetBarrierButton(false);
+  };
+
   const updatedGrid = [...grid];
 
   return (
-    <div className='flex flex-col justify-center items-center'>
+    <div className='flex flex-col justify-center items-center pt-10'>
       <div className="grid grid-cols-10">
         {updatedGrid.map((row, rowIndex) => (
           <div key={rowIndex}>
@@ -71,7 +79,7 @@ const Grid = ({ rows, cols }) => {
           </div>
         ))}
       </div>
-      <div className="flex justify-center items-center pt-20 gap-8">
+      <div className="flex justify-center items-center pt-10 gap-8">
         <button
           className={`bg-green-500 text-white font-bold py-2 px-4 ${APointActive && !setBarrierButton && 'opacity-50'}`}
           onClick={() => setAPointActive(!APointActive)}
@@ -87,12 +95,19 @@ const Grid = ({ rows, cols }) => {
           Set B
         </button>
         <button
-          className={`bg-${setBarrierButton ? 'yellow-500' : 'black'} text-white font-bold py-2 px-4`}
+          className={`bg-black text-white font-bold py-2 px-4`}
           onClick={() => setSetBarrierButton(!setBarrierButton)}
         >
           Set Barrier
         </button>
+        <button
+          className="bg-blue-500 text-white font-bold py-2 px-4"
+          onClick={clearGrid}
+        >
+          Clear
+        </button>
       </div>
+      {setBarrierButton && <h1>Barrier Mode is ON (click again to set other points)</h1>}
     </div>
   );
 };

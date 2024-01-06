@@ -7,6 +7,8 @@ const Grid = ({ rows, cols }) => {
   const [BPointActive, setBPointActive] = useState(false);
   const [setBarrierButton, setSetBarrierButton] = useState(false);
   const [path, setPath] = useState([]);
+  const [bfsDone, setBfsDone] = useState(false);
+
 
   const initialGrid = Array.from({ length: rows }, () =>
     Array.from({ length: cols }, () => ({
@@ -65,31 +67,45 @@ const Grid = ({ rows, cols }) => {
     setAPointActive(false);
     setBPointActive(false);
     setSetBarrierButton(false);
-    setVisited(false);
-    setPath([]);
+    setBfsDone(false);
   };
 
   const runBFS = async () => {
+    setPath([]);
+    setBfsDone(false);
+  
+    // Reset the 'visited' attribute for all cells
+    setGrid((prevGrid) => {
+      const resetVisitedGrid = prevGrid.map((row) =>
+        row.map((cell) => ({
+          ...cell,
+          visited: false,
+        }))
+      );
+      return resetVisitedGrid;
+    });
+  
     const startPoint = findPoint(grid, 'pointA');
     const endPoint = findPoint(grid, 'pointB');
-
+  
     if (startPoint && endPoint) {
       const { path, visitedCells } = bfs(grid, startPoint, endPoint);
       setPath(path);
-
+  
       for (let i = 0; i < visitedCells.length; i++) {
         const { row, col } = visitedCells[i];
-
+  
         setGrid((prevGrid) => {
           const updatedGrid = [...prevGrid];
           updatedGrid[row][col].visited = true;
           return updatedGrid;
         });
-
+  
         // Add a delay (e.g., 100 milliseconds) to visualize the process
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
     }
+    setBfsDone(true);
   };
 
   const findPoint = (grid, pointType) => {
@@ -101,6 +117,50 @@ const Grid = ({ rows, cols }) => {
       }
     }
     return null;
+  };
+
+  const randomizeGrid = () => {
+    clearGrid();
+    const numBarriers = Math.floor(Math.random() * (25-15) + 15);
+    const availableCells = [];
+  
+    // Initialize available cells without barriers, pointA, and pointB
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        if (!grid[i][j].isBarrier && !grid[i][j].pointA && !grid[i][j].pointB) {
+          availableCells.push({ row: i, col: j });
+        }
+      }
+    }
+  
+    // Randomly place barriers
+    for (let i = 0; i < numBarriers && availableCells.length > 0; i++) {
+      const randomIndex = Math.floor(Math.random() * availableCells.length);
+      const { row, col } = availableCells[randomIndex];
+      setGrid((prevGrid) => {
+        const updatedGrid = [...prevGrid];
+        updatedGrid[row][col].isBarrier = true;
+        return updatedGrid;
+      });
+      availableCells.splice(randomIndex, 1); // Remove the cell from available cells
+    }
+  
+    // Randomly place points A and B if there are available cells
+    if (availableCells.length > 1) {
+      const randomizePoint = (pointType) => {
+        const randomIndex = Math.floor(Math.random() * availableCells.length);
+        const { row, col } = availableCells[randomIndex];
+        setGrid((prevGrid) => {
+          const updatedGrid = [...prevGrid];
+          updatedGrid[row][col][pointType] = true;
+          return updatedGrid;
+        });
+        availableCells.splice(randomIndex, 1); // Remove the cell from available cells
+      };
+  
+      randomizePoint('pointA');
+      randomizePoint('pointB');
+    }
   };
 
   const updatedGrid = [...grid];
@@ -128,6 +188,8 @@ const Grid = ({ rows, cols }) => {
                 isBarrier={cell.isBarrier}
                 onClick={() => handleCellClick(rowIndex, colIndex)}
                 visited={cell.visited}
+                path={path.some(p => p.row === rowIndex && p.col === colIndex)}
+                bfsDone={bfsDone}
               />
             ))}
           </div>
@@ -161,8 +223,11 @@ const Grid = ({ rows, cols }) => {
         <button className='bg-blue-500 text-white font-bold py-2 px-4' onClick={clearGrid}>
           Clear
         </button>
+        <button className='bg-blue-500 text-white font-bold py-2 px-4' onClick={randomizeGrid}>
+          Randomize
+        </button>
       </div>
-      {path.length > 0 && (
+      {bfsDone && (
         <div>
           <h2>Path found:</h2>
           {path.map((point, index) => (
